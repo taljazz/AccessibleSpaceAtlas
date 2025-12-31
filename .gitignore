@@ -42,6 +42,13 @@ Thumbs.db
 data/celestial_cache.json
 celestial_objects_export.csv
 
+# Build artifacts
+dist/
+build/
+*.exe
+*.build/
+*.onefile-build/
+
 # Claude Code
 .claude/
 CLAUDE.md
