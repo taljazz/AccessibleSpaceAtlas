@@ -28,7 +28,6 @@ python -m nuitka ^
     --standalone ^
     --onefile ^
     --windows-console-mode=attach ^
-    --enable-plugin=pygame ^
     --include-data-dir=data=data ^
     --include-data-files=nvdaControllerClient64.dll=nvdaControllerClient64.dll ^
     --include-data-files=SAAPI64.dll=SAAPI64.dll ^

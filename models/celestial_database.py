@@ -4,14 +4,29 @@ Loads from JSON catalog and supports dynamic querying of NASA APIs.
 """
 import json
 import logging
+import sys
+import os
 from pathlib import Path
+
+
+def get_base_path():
+    """Get the base path for data files, handling both dev and compiled scenarios."""
+    # Check if running as compiled Nuitka executable
+    if getattr(sys, 'frozen', False) or '__compiled__' in dir():
+        # Running as compiled - use executable directory
+        return Path(os.path.dirname(sys.executable))
+    else:
+        # Running as script - use script directory
+        return Path(__file__).parent.parent
 
 
 class CelestialDatabase:
     """Manages celestial object definitions and catalog with dynamic loading."""
 
     def __init__(self, catalog_file="data/celestial_objects.json"):
-        self.catalog_file = Path(catalog_file)
+        # Get correct base path for both dev and compiled modes
+        base_path = get_base_path()
+        self.catalog_file = base_path / catalog_file
         self.catalog_data = None
         self.definitions = []
         self.active_categories = ["star", "planets", "dwarf_planets", "moons", "spacecraft"]  # Default categories

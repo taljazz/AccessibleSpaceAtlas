@@ -7,9 +7,18 @@ import logging
 import re
 import json
 import os
+import sys
 from datetime import datetime
 from pathlib import Path
 from models.celestial_object import CelestialObject
+
+
+def get_base_path():
+    """Get the base path for data files, handling both dev and compiled scenarios."""
+    if getattr(sys, 'frozen', False) or '__compiled__' in dir():
+        return Path(os.path.dirname(sys.executable))
+    else:
+        return Path(__file__).parent.parent
 
 
 class HorizonsAPIClient:
@@ -17,7 +26,8 @@ class HorizonsAPIClient:
 
     def __init__(self, cache_file="data/celestial_cache.json"):
         self.base_url = "https://ssd.jpl.nasa.gov/api/horizons.api"
-        self.cache_file = Path(cache_file)
+        base_path = get_base_path()
+        self.cache_file = base_path / cache_file
         self.cache_max_age_hours = 24  # Cache valid for 24 hours
 
     def _save_to_cache(self, objects_data):

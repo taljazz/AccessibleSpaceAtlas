@@ -4,8 +4,18 @@ Handles three user experience modes: Educational, Exploration, and Advanced.
 """
 import json
 import logging
+import sys
+import os
 from enum import Enum
 from pathlib import Path
+
+
+def get_base_path():
+    """Get the base path for data files, handling both dev and compiled scenarios."""
+    if getattr(sys, 'frozen', False) or '__compiled__' in dir():
+        return Path(os.path.dirname(sys.executable))
+    else:
+        return Path(__file__).parent.parent
 
 
 class UserMode(Enum):
@@ -31,7 +41,8 @@ class ConfigManager:
     AU_PER_DAY_TO_KM_PER_SEC = AU_TO_KM / 86400  # Convert AU/day to km/s
 
     def __init__(self, config_file="config.json"):
-        self.config_file = Path(config_file)
+        base_path = get_base_path()
+        self.config_file = base_path / config_file
         self.user_mode = UserMode.EXPLORATION  # Default mode
         self.time_scale = 365.0  # Days per second (default: 1 year per second)
         self.dynamic_positions = True  # Enable dynamic position updates
