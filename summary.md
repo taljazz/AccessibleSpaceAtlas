@@ -842,9 +842,208 @@ DEBUG: Jupiter: TRUE SCALE, distance=5.203 AU
 
 ---
 
+---
+
+## Phase 5: Performance & Usability Optimizations (December 31, 2025)
+
+### Persistent Bookmarks
+
+**Previously**: Bookmarks lost when app closes
+**Now**: All bookmarks saved to `config.json` and restored on startup
+
+**Features**:
+- **10 bookmark slots** (keys 0-9, where 0 = slot 10)
+- **Shift+Number**: Overwrite specific slot
+- **Shift+B**: List all saved bookmarks
+- **Auto-save**: Changes persist immediately
+
+### Distance Units Toggle
+
+**Key**: **U** to cycle through units
+
+**Supported Units**:
+- **A U** (Astronomical Units) - default, spaced for screen readers
+- **Kilometers** - with smart formatting (millions/billions)
+- **Miles** - with smart formatting
+
+**Example Announcements**:
+- "1.52 A U" → "227.94 million km" → "141.64 million miles"
+
+### Velocity Announcements
+
+**Key**: **V** to announce current object's speed
+
+**Features**:
+- Speed calculated from velocity vector (vx, vy, vz)
+- Displayed in km/s (most intuitive unit)
+- Mode-aware verbosity
+
+**Example**: "Earth is traveling at 29.78 km/s through space."
+
+### Relative Distance Measurements
+
+**Keys**:
+- **R**: Announce distance from current object to reference
+- **Shift+R**: Set current object as the reference
+
+**Default Reference**: Earth
+
+**Example**: "Mars is 0.52 A U away from Earth."
+
+### Zoom Controls
+
+**Keys**:
+- **Page Up**: Zoom in (×1.25)
+- **Page Down**: Zoom out (÷1.25)
+- **Home**: Reset to 100%
+
+**Range**: 10% to 1000% zoom
+**Features**:
+- Objects scale with zoom
+- Positions scale relative to center
+- Zoom level saved to config
+
+### CSV Export
+
+**Key**: **E** to export all objects
+
+**Exports**:
+- Object name, type, parent
+- X, Y, Z positions (AU)
+- Distance from Sun (AU)
+- Velocity components (AU/day)
+- Speed (km/s)
+
+**Output**: `celestial_objects_export.csv` in app directory
+
+### Audio Caching
+
+**Purpose**: Reduce lag on mode switches and navigation
+
+**Implementation**:
+- Sounds cached by (type, distance_bucket, complexity, pan_bucket)
+- Distance bucketed to 0.5 AU increments
+- Panning bucketed to 10 positions
+- Cache stats available via `audio_engine.get_cache_stats()`
+
+**Result**: Near-instant sound playback after initial generation
+
+### Offline Position Caching
+
+**Purpose**: App works without internet after first successful load
+
+**Features**:
+- Positions saved to `data/celestial_cache.json`
+- Cache valid for 24 hours
+- Automatic fallback if API unavailable
+- Shows "from cache" in announcements when using cached data
+
+### Improved Async Data Handling
+
+**Visual Progress Indicator**:
+- Progress bar during startup
+- Status messages: "Checking cache...", "Fetching from NASA API...", "Generating audio..."
+- Percentage display (0-100%)
+
+**Cache-First Strategy**:
+1. Load from cache immediately (if available)
+2. Fetch fresh data from API in background
+3. Update objects when API data arrives
+4. User can interact during loading
+
+### Compiled Executable
+
+**Build System**: Nuitka
+
+**Files**:
+- `build.bat` - Windows build script
+- Output: `dist/AccessibleSpaceAtlas.exe` (~45 MB)
+
+**Includes**:
+- All Python dependencies bundled
+- Data files embedded
+- Screen reader DLLs included
+- Single-file portable executable
+
+**Path Handling**: Added `get_base_path()` function to handle both development and compiled file paths correctly.
+
+### GitHub Release
+
+**Repository**: https://github.com/taljazz/AccessibleSpaceAtlas
+
+**v1.0.0 Release Includes**:
+- Source code
+- README with full documentation
+- MIT License
+- requirements.txt
+- Standalone Windows executable
+
+---
+
+## Updated Keyboard Controls Reference
+
+### New Controls Added
+
+| Key | Action |
+|-----|--------|
+| **U** | Cycle distance units (A U → km → miles) |
+| **V** | Announce object velocity/speed |
+| **R** | Distance to reference object |
+| **Shift+R** | Set current as reference |
+| **0** | Recall bookmark slot 10 |
+| **Shift+0-9** | Save to specific bookmark slot |
+| **Shift+B** | List all bookmarks |
+| **Page Up** | Zoom in |
+| **Page Down** | Zoom out |
+| **Home** | Reset zoom to 100% |
+| **E** | Export to CSV |
+
+### Complete Controls Count
+
+- **Total keyboard commands**: 35+ distinct controls
+- **Modifier combinations**: 12 (Shift+key)
+- **Numeric keys**: 10 (bookmarks)
+
+---
+
+## Technical Summary
+
+### New Configuration Options
+
+```json
+{
+  "user_mode": "exploration",
+  "time_scale": 365.0,
+  "dynamic_positions": true,
+  "distance_unit": "au",
+  "bookmarks": {"1": "Earth", "2": "Mars", "5": "Jupiter"},
+  "zoom_level": 1.0,
+  "master_volume": 0.8
+}
+```
+
+### New Helper Functions
+
+- `get_base_path()`: Returns correct path for dev/compiled modes
+- `format_distance()`: Formats distance in selected unit
+- `format_speed()`: Formats velocity in km/s
+- `get_velocity_announcement()`: Mode-aware velocity string
+- `get_relative_distance_announcement()`: Distance between two objects
+- `export_to_csv()`: Full object data export
+
+### Cache Files
+
+| File | Purpose | Location |
+|------|---------|----------|
+| `config.json` | User preferences | App root |
+| `data/celestial_cache.json` | Offline positions | data/ |
+| `celestial_objects_export.csv` | CSV export | App root |
+
+---
+
 **Last Updated**: December 31, 2025
-**Version**: 2.0 (Major Audio & Space Weather Enhancements)
-**Total Features**: 16 major feature categories
+**Version**: 3.0 (Performance & Usability Optimizations)
+**Total Features**: 22 major feature categories
 **Total Objects**: 85+ celestial bodies
-**Keyboard Commands**: 27+ distinct controls
-**Bug Fixes**: 2 (Search mode, Hybrid mode clarification)
+**Keyboard Commands**: 35+ distinct controls
+**GitHub Release**: v1.0.0 available with standalone executable
