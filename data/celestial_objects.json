@@ -1,0 +1,97 @@
+{
+  "version": "1.0",
+  "last_updated": "2025-12-30",
+  "categories": {
+    "star": [
+      {"name": "Sun", "command": "10", "type": "Star", "size": 20, "description": "Our star, center of the solar system"}
+    ],
+    "planets": [
+      {"name": "Mercury", "command": "199", "type": "Planet", "size": 8, "parent": "Sun", "description": "Smallest planet, closest to Sun"},
+      {"name": "Venus", "command": "299", "type": "Planet", "size": 10, "parent": "Sun", "description": "Hottest planet with thick atmosphere"},
+      {"name": "Earth", "command": "399", "type": "Planet", "size": 12, "parent": "Sun", "description": "Our home planet"},
+      {"name": "Mars", "command": "499", "type": "Planet", "size": 9, "parent": "Sun", "description": "The Red Planet"},
+      {"name": "Jupiter", "command": "599", "type": "Planet", "size": 15, "parent": "Sun", "description": "Largest planet, gas giant"},
+      {"name": "Saturn", "command": "699", "type": "Planet", "size": 14, "parent": "Sun", "description": "Ringed gas giant"},
+      {"name": "Uranus", "command": "799", "type": "Planet", "size": 13, "parent": "Sun", "description": "Ice giant tilted on its side"},
+      {"name": "Neptune", "command": "899", "type": "Planet", "size": 13, "parent": "Sun", "description": "Farthest major planet"}
+    ],
+    "dwarf_planets": [
+      {"name": "Ceres", "command": "1", "type": "Dwarf Planet", "size": 6, "parent": "Sun", "description": "Largest asteroid, in asteroid belt"},
+      {"name": "Pluto", "command": "134340", "type": "Dwarf Planet", "size": 7, "parent": "Sun", "description": "Most famous dwarf planet"},
+      {"name": "Haumea", "command": "136108", "type": "Dwarf Planet", "size": 6, "parent": "Sun", "description": "Egg-shaped dwarf planet"},
+      {"name": "Makemake", "command": "136472", "type": "Dwarf Planet", "size": 6, "parent": "Sun", "description": "Trans-Neptunian object"},
+      {"name": "Eris", "command": "136199", "type": "Dwarf Planet", "size": 6, "parent": "Sun", "description": "Most massive dwarf planet"}
+    ],
+    "moons": [
+      {"name": "Moon", "command": "301", "type": "Moon", "size": 8, "parent": "Earth", "description": "Earth's only natural satellite"},
+      {"name": "Phobos", "command": "401", "type": "Moon", "size": 4, "parent": "Mars", "description": "Larger moon of Mars"},
+      {"name": "Deimos", "command": "402", "type": "Moon", "size": 3, "parent": "Mars", "description": "Smaller moon of Mars"},
+      {"name": "Io", "command": "501", "type": "Moon", "size": 7, "parent": "Jupiter", "description": "Most volcanically active body"},
+      {"name": "Europa", "command": "502", "type": "Moon", "size": 7, "parent": "Jupiter", "description": "Icy moon with subsurface ocean"},
+      {"name": "Ganymede", "command": "503", "type": "Moon", "size": 8, "parent": "Jupiter", "description": "Largest moon in solar system"},
+      {"name": "Callisto", "command": "504", "type": "Moon", "size": 7, "parent": "Jupiter", "description": "Heavily cratered moon"},
+      {"name": "Titan", "command": "606", "type": "Moon", "size": 8, "parent": "Saturn", "description": "Only moon with thick atmosphere"},
+      {"name": "Enceladus", "command": "602", "type": "Moon", "size": 5, "parent": "Saturn", "description": "Icy moon with geysers"},
+      {"name": "Mimas", "command": "601", "type": "Moon", "size": 4, "parent": "Saturn", "description": "Death Star moon"},
+      {"name": "Rhea", "command": "605", "type": "Moon", "size": 5, "parent": "Saturn", "description": "Second-largest moon of Saturn"},
+      {"name": "Iapetus", "command": "608", "type": "Moon", "size": 5, "parent": "Saturn", "description": "Two-toned moon"},
+      {"name": "Triton", "command": "801", "type": "Moon", "size": 6, "parent": "Neptune", "description": "Largest moon of Neptune"},
+      {"name": "Charon", "command": "901", "type": "Moon", "size": 5, "parent": "Pluto", "description": "Largest moon of Pluto"}
+    ],
+    "asteroids": [
+      {"name": "Vesta", "command": "4", "type": "Asteroid", "size": 5, "parent": "Sun", "description": "Second-largest asteroid"},
+      {"name": "Pallas", "command": "2", "type": "Asteroid", "size": 5, "parent": "Sun", "description": "Third-largest asteroid"},
+      {"name": "Hygiea", "command": "10", "type": "Asteroid", "size": 4, "parent": "Sun", "description": "Fourth-largest asteroid"},
+      {"name": "Juno", "command": "3", "type": "Asteroid", "size": 4, "parent": "Sun", "description": "Third asteroid discovered"},
+      {"name": "Iris", "command": "7", "type": "Asteroid", "size": 4, "parent": "Sun", "description": "Bright S-type asteroid"},
+      {"name": "Hebe", "command": "6", "type": "Asteroid", "size": 4, "parent": "Sun", "description": "Main belt asteroid"},
+      {"name": "Davida", "command": "511", "type": "Asteroid", "size": 4, "parent": "Sun", "description": "Large C-type asteroid"},
+      {"name": "Psyche", "command": "16", "type": "Asteroid", "size": 4, "parent": "Sun", "description": "Metal-rich asteroid"},
+      {"name": "Eros", "command": "433", "type": "Asteroid", "size": 3, "parent": "Sun", "description": "Near-Earth asteroid"},
+      {"name": "Bennu", "command": "101955", "type": "Asteroid", "size": 3, "parent": "Sun", "description": "OSIRIS-REx target"}
+    ],
+    "comets": [
+      {"name": "Halley", "command": "1P", "type": "Comet", "size": 3, "parent": "Sun", "description": "Most famous periodic comet"},
+      {"name": "Encke", "command": "2P", "type": "Comet", "size": 3, "parent": "Sun", "description": "Shortest period comet"},
+      {"name": "Borrelly", "command": "19P", "type": "Comet", "size": 3, "parent": "Sun", "description": "Deep Space 1 target"},
+      {"name": "Tempel 1", "command": "9P", "type": "Comet", "size": 3, "parent": "Sun", "description": "Deep Impact target"},
+      {"name": "Wild 2", "command": "81P", "type": "Comet", "size": 3, "parent": "Sun", "description": "Stardust target"},
+      {"name": "Churyumov-Gerasimenko", "command": "67P", "type": "Comet", "size": 3, "parent": "Sun", "description": "Rosetta target"}
+    ],
+    "spacecraft": [
+      {"name": "Voyager 1", "command": "-31", "type": "Spacecraft", "size": 2, "parent": "Sun", "description": "Farthest human-made object", "mission": "Interstellar"},
+      {"name": "Voyager 2", "command": "-32", "type": "Spacecraft", "size": 2, "parent": "Sun", "description": "Only spacecraft to visit Uranus and Neptune", "mission": "Interstellar"},
+      {"name": "New Horizons", "command": "-98", "type": "Spacecraft", "size": 2, "parent": "Sun", "description": "Pluto flyby mission", "mission": "Kuiper Belt"},
+      {"name": "Parker Solar Probe", "command": "-96", "type": "Spacecraft", "size": 2, "parent": "Sun", "description": "Closest approach to Sun", "mission": "Solar"},
+      {"name": "Juno", "command": "-61", "type": "Spacecraft", "size": 2, "parent": "Jupiter", "description": "Jupiter polar orbiter", "mission": "Jupiter"},
+      {"name": "Cassini", "command": "-82", "type": "Spacecraft", "size": 2, "parent": "Saturn", "description": "Saturn orbiter (ended 2017)", "mission": "Completed"},
+      {"name": "OSIRIS-REx", "command": "-64", "type": "Spacecraft", "size": 2, "parent": "Sun", "description": "Asteroid sample return", "mission": "Bennu"},
+      {"name": "Lucy", "command": "-49", "type": "Spacecraft", "size": 2, "parent": "Sun", "description": "Trojan asteroid explorer", "mission": "Jupiter Trojans"},
+      {"name": "Psyche", "command": "-254", "type": "Spacecraft", "size": 2, "parent": "Sun", "description": "Metal asteroid mission", "mission": "Psyche"},
+      {"name": "Europa Clipper", "command": "-159", "type": "Spacecraft", "size": 2, "parent": "Jupiter", "description": "Europa reconnaissance", "mission": "Jupiter"},
+      {"name": "JWST", "command": "-170", "type": "Spacecraft", "size": 2, "parent": "Sun", "description": "James Webb Space Telescope", "mission": "Space Observatory"},
+      {"name": "Hubble", "command": "-48", "type": "Spacecraft", "size": 2, "parent": "Earth", "description": "Hubble Space Telescope", "mission": "Space Observatory"},
+      {"name": "Chandra", "command": "-151", "type": "Spacecraft", "size": 2, "parent": "Earth", "description": "X-ray Observatory", "mission": "Space Observatory"},
+      {"name": "Mars Perseverance", "command": "-168", "type": "Spacecraft", "size": 2, "parent": "Mars", "description": "Mars rover", "mission": "Mars Surface"},
+      {"name": "Mars Curiosity", "command": "-76", "type": "Spacecraft", "size": 2, "parent": "Mars", "description": "Mars rover", "mission": "Mars Surface"},
+      {"name": "Mars Odyssey", "command": "-53", "type": "Spacecraft", "size": 2, "parent": "Mars", "description": "Mars orbiter", "mission": "Mars Orbit"},
+      {"name": "Mars Reconnaissance Orbiter", "command": "-74", "type": "Spacecraft", "size": 2, "parent": "Mars", "description": "Mars orbiter", "mission": "Mars Orbit"},
+      {"name": "SPHEREx", "command": "-235", "type": "Spacecraft", "size": 2, "parent": "Sun", "description": "All-sky spectral survey (2025)", "mission": "Space Observatory"},
+      {"name": "NISAR", "command": "-999", "type": "Spacecraft", "size": 2, "parent": "Earth", "description": "Radar imaging satellite (2025)", "mission": "Earth Observation"},
+      {"name": "IMAP", "command": "-300", "type": "Spacecraft", "size": 2, "parent": "Sun", "description": "Heliophysics mission (2025)", "mission": "Solar"}
+    ]
+  },
+  "metadata": {
+    "total_objects": 85,
+    "api_source": "NASA JPL Horizons System",
+    "categories_count": {
+      "star": 1,
+      "planets": 8,
+      "dwarf_planets": 5,
+      "moons": 14,
+      "asteroids": 10,
+      "comets": 6,
+      "spacecraft": 21
+    }
+  }
+}

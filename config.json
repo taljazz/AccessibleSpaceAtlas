@@ -1,0 +1,9 @@
+{
+  "user_mode": "exploration",
+  "time_scale": 1.0,
+  "dynamic_positions": true,
+  "distance_unit": "miles",
+  "bookmarks": {},
+  "zoom_level": 0.32768,
+  "master_volume": 1.0
+}

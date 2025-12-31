@@ -1,0 +1,13 @@
+Potential Issues & Fixes
+• API Reliability: Horizons parsing uses regex on text output—fragile if NASA changes format (e.g., added fields). Suggestion: Switch to format="json" and parse the structured 'result' directly (docs support it ). In code: Check for JSON vectors array instead of regex.
+• Truncations in JSON: The provided celestial_objects.json is truncated (e.g., Makemake desc cut), but loads fine. Full file has 85 objs; ensure all commands are quoted properly (your _load_catalog adds them—good!).
+• Performance: With 85+ objs, dynamic updates at high time_scale could lag on low-end hardware. Add batching in update loop: Group by type or distance.
+• Accessibility Edge Cases: If cytolk fails (e.g., no screen reader), fallback to console logs—already handled, but add optional text-to-wav for audio-only users.
+• 2025-Specific Notes: No major API deprecations [web:3, web:5]. Horizons added optional 'VEC_DELTA' param for differentials, but your VECTORS query is fine. DONKI now supports 'mostRecent=true' for efficiency—add to get_active_warnings for real-time alerts.
+• Dependencies: All covered (pygame, numpy, scipy, requests, cytolk). No installs needed.
+Enhancement Ideas (Tag-Team Ready!)
+1. Real-Time Weather Integration: In main loop, poll SpaceWeatherClient every 60s; play warning tones (e.g., pulsating 220Hz for flares) with spatial panning if Earth-directed.
+2. HRTF for True 3D Audio: Extend AudioEngine with pysofaconventions (if avail) for head-related transfer functions—elevate 'complex' mode to binaural.
+3. Chart Rendering: Add a mode to visualize orbits (e.g., matplotlib plots saved as images, or pygame lines for trajectories).
+4. Multi-Lang Support: Extend announcements with gettext; query user locale.
+5. Testing Expansion: Add unit tests (e.g., for regex parsing: mock ephemeris text).
