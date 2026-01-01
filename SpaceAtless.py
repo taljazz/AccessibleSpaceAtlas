@@ -15,6 +15,9 @@ from engine.config_manager import ConfigManager, UserMode, DistanceUnit
 from engine.audio_engine import AudioEngine
 from utils.api_client import HorizonsAPIClient
 from utils.space_weather_client import SpaceWeatherClient
+from navigation.tree_mode import TreeNavigator
+from ui.help_navigator import KeystrokeHelp, EducationalHelp
+from engine.ambient_audio_manager import AmbientAudioManager
 
 # For CSV export
 import csv
@@ -46,11 +49,19 @@ SPACECRAFT_COLOR = (255, 69, 0)     # Orange Red
 # Font for displaying text (optional visual feedback)
 FONT = pygame.font.SysFont("Arial", 16)
 
-# Selection mode flag
+# Selection mode flag (legacy - replaced by tree mode)
 selection_mode = False
 
-# Index for list navigation
+# Index for list navigation (legacy - replaced by tree mode)
 selection_index = 0
+
+# Tree navigation mode (replaces flat jump mode)
+tree_mode = False
+tree_navigator = None
+
+# Help navigation mode
+help_mode = False
+help_navigator = None
 
 # Object filter mode
 filter_mode = "all"  # Options: "all", "Star", "Planet", "Dwarf Planet", "Moon", "Asteroid", "Comet", "Spacecraft"
@@ -307,6 +318,7 @@ def data_fetch_thread(celestial_objects, lock, speech_queue):
 # Main Function
 def main():
     global selection_mode, selection_index, filter_mode, search_mode, search_query, follow_mode, followed_object, cluster_focus_mode, focused_parent, hierarchical_audio_mode, master_volume, reference_object_name
+    global help_mode, help_navigator, tree_mode, tree_navigator
 
     # Initialize configuration manager
     config_manager = ConfigManager()
@@ -317,6 +329,9 @@ def main():
     # Initialize audio engine
     audio_engine = AudioEngine()
     logging.info("AudioEngine initialized for 3D spatial audio")
+
+    # Initialize ambient audio manager (will be set up after speech_queue is created)
+    ambient_manager = None
 
     # Initialize speech handler
     speech_queue = queue.Queue()
@@ -334,6 +349,9 @@ def main():
             sys.exit(1)
     else:
         logging.warning("Cytolk is not available. Screen reader support is disabled.")
+
+    # Initialize ambient audio manager
+    ambient_manager = AmbientAudioManager(speech_queue, config_manager)
 
     # Initialize celestial objects list
     celestial_objects = []
@@ -484,7 +502,7 @@ def main():
                         selected_object = 0
                         obj = filtered_objects[selected_object]
                         obj.announce(speech_queue, config_manager)
-                        obj.play_sound()
+                        obj.play_sound(master_volume)
                         first_selection_made = True
 
             # Periodic space weather check (every 60 seconds)
@@ -535,12 +553,72 @@ def main():
                 weather_poll_thread.start()
 
             for event in pygame.event.get():
+                # Debug: Log all events to help diagnose Control key issue
+                if event.type not in (MOUSEMOTION,):  # Skip noisy mouse events
+                    logging.debug(f"Event received: type={event.type}, event={event}")
+
                 if event.type == QUIT:
+                    logging.info("QUIT event received - closing application")
                     speech_queue.put("Exiting Accessible Space Atlas.")
                     running = False
 
                 elif event.type == KEYDOWN:
-                    if not selection_mode and not search_mode:
+                    # Log key presses for debugging
+                    logging.info(f"KEYDOWN: key={event.key}, mod={event.mod}, unicode='{event.unicode}'")
+
+                    # Help mode takes highest priority
+                    if help_mode:
+                        if event.key == K_UP:
+                            help_navigator.move_up()
+                        elif event.key == K_DOWN:
+                            help_navigator.move_down()
+                        elif event.key == K_RETURN or event.key == K_KP_ENTER:
+                            help_navigator.read_current()
+                        elif event.key == K_ESCAPE:
+                            help_mode = False
+                            help_navigator = None
+                            speech_queue.put("Exiting help.")
+                        # All other keys ignored in help mode
+
+                    # Tree navigation mode
+                    elif tree_mode:
+                        if event.key == K_UP:
+                            tree_navigator.move_up()
+                        elif event.key == K_DOWN:
+                            tree_navigator.move_down()
+                        elif event.key == K_RIGHT or event.key == K_RETURN or event.key == K_KP_ENTER:
+                            result = tree_navigator.enter()
+                            if result is not None:
+                                # Selected a leaf object - exit tree mode and jump to it
+                                with lock:
+                                    try:
+                                        selected_object = filtered_objects.index(result)
+                                        result.announce(speech_queue, config_manager)
+                                        result.play_sound(master_volume)
+                                        # Switch ambient audio if enabled
+                                        if ambient_manager.is_enabled:
+                                            ambient_manager.play_for_object(result)
+                                        tree_mode = False
+                                        tree_navigator = None
+                                        speech_queue.put(f"Jumped to {result.name}.")
+                                    except ValueError:
+                                        speech_queue.put(f"{result.name} is currently filtered out. Change filter to see it.")
+                        elif event.key == K_LEFT:
+                            if not tree_navigator.go_back():
+                                # At root, just announce - don't exit
+                                speech_queue.put("At top level. Press Escape to exit.")
+                        elif event.key == K_TAB:
+                            mods = pygame.key.get_mods()
+                            if mods & KMOD_SHIFT:
+                                tree_navigator.unflatten()
+                            else:
+                                tree_navigator.flatten()
+                        elif event.key == K_ESCAPE:
+                            tree_mode = False
+                            tree_navigator = None
+                            speech_queue.put("Tree navigation cancelled.")
+
+                    elif not selection_mode and not search_mode:
                         # Normal navigation keys
                         direction = None
                         if event.key == K_LEFT:
@@ -552,11 +630,12 @@ def main():
                         elif event.key == K_DOWN:
                             direction = 'down'
                         elif event.key == K_j:
-                            # Activate selection mode
-                            selection_mode = True
-                            selection_index = 0  # Start at the first item
-                            speech_queue.put(config_manager.get_jump_mode_activation_announcement())
-                            announce_current_selection(filtered_objects, selection_index, speech_queue, config_manager)
+                            # Activate tree navigation mode
+                            tree_mode = True
+                            tree_navigator = TreeNavigator(speech_queue, config_manager)
+                            with lock:
+                                tree_navigator.build_tree(celestial_objects)
+                            tree_navigator.announce_entry()
                         elif event.key == K_m:
                             # Toggle user mode
                             config_manager.cycle_mode()
@@ -628,13 +707,21 @@ def main():
                                 selected_object = 0
                                 obj = filtered_objects[selected_object]
                                 obj.announce(speech_queue, config_manager)
-                                obj.play_sound()
+                                obj.play_sound(master_volume)
                             else:
                                 selected_object = None
                                 speech_queue.put(f"No {filter_mode}s found.")
                         elif event.key == K_h:
-                            # Show help
-                            announce_help(speech_queue)
+                            # Enter help navigation mode
+                            mods = pygame.key.get_mods()
+                            help_mode = True
+                            if mods & KMOD_SHIFT:
+                                # Shift+H: Educational content about space
+                                help_navigator = EducationalHelp(speech_queue, config_manager)
+                            else:
+                                # H: Keystroke help
+                                help_navigator = KeystrokeHelp(speech_queue, config_manager)
+                            help_navigator.announce_entry()
                         elif event.key == K_s:
                             # Enter search mode
                             search_mode = True
@@ -698,7 +785,10 @@ def main():
                                         try:
                                             selected_object = filtered_objects.index(bookmark_obj)
                                             bookmark_obj.announce(speech_queue, config_manager)
-                                            bookmark_obj.play_sound()
+                                            bookmark_obj.play_sound(master_volume)
+                                            # Switch ambient audio if enabled
+                                            if ambient_manager.is_enabled:
+                                                ambient_manager.play_for_object(bookmark_obj)
                                             slot_display = bookmark_num if bookmark_num != 0 else 10
                                             speech_queue.put(f"Recalled bookmark {slot_display}: {bookmark_obj.name}.")
                                         except ValueError:
@@ -873,8 +963,15 @@ def main():
                             config_manager.reset_zoom()
                             speech_queue.put("Zoom reset to 100 percent.")
                             logging.info("Zoom reset to 100%")
+                        elif event.key == K_a:
+                            # Toggle ambient audio
+                            if selected_object is not None and len(filtered_objects) > 0:
+                                current_obj = filtered_objects[selected_object]
+                                ambient_manager.toggle(current_obj)
+                            else:
+                                ambient_manager.toggle(None)
 
-                        if direction and not selection_mode and not search_mode:
+                        if direction and not selection_mode and not search_mode and not help_mode and not tree_mode:
                             with lock:
                                 if filtered_objects and selected_object is not None:
                                     next_index = nav_controller.get_next_spatial_object(filtered_objects, selected_object, direction)
@@ -882,7 +979,10 @@ def main():
                                         selected_object = next_index
                                         obj = filtered_objects[selected_object]
                                         obj.announce(speech_queue, config_manager)
-                                        obj.play_sound()
+                                        obj.play_sound(master_volume)
+                                        # Switch ambient audio if enabled
+                                        if ambient_manager.is_enabled:
+                                            ambient_manager.play_for_object(obj)
                     elif selection_mode:
                         # Selection mode navigation
                         if event.key == K_UP:
@@ -899,7 +999,10 @@ def main():
                                 selected_object = selection_index
                                 obj = filtered_objects[selected_object]
                                 obj.announce(speech_queue, config_manager)
-                                obj.play_sound()
+                                obj.play_sound(master_volume)
+                                # Switch ambient audio if enabled
+                                if ambient_manager.is_enabled:
+                                    ambient_manager.play_for_object(obj)
                             # Exit selection mode
                             selection_mode = False
                             speech_queue.put(f"Jumped to {obj.name}.")
@@ -924,7 +1027,10 @@ def main():
                                 try:
                                     selected_object = filtered_objects.index(match_obj)
                                     match_obj.announce(speech_queue, config_manager)
-                                    match_obj.play_sound()
+                                    match_obj.play_sound(master_volume)
+                                    # Switch ambient audio if enabled
+                                    if ambient_manager.is_enabled:
+                                        ambient_manager.play_for_object(match_obj)
                                     speech_queue.put(f"Found and selected: {match_obj.name}.")
                                 except ValueError:
                                     speech_queue.put(f"Found {match_obj.name}, but it's filtered out. Change filter to see it.")
@@ -1132,10 +1238,19 @@ def main():
             pygame.display.flip()
             clock.tick(30)  # 30 FPS
 
+        # Log when main loop exits normally
+        logging.info("Main loop exited. running=%s", running)
+
     except KeyboardInterrupt:
-        logging.info("Program interrupted by user.")
+        logging.info("Program interrupted by user (KeyboardInterrupt).")
         speech_queue.put("Program interrupted by user.")
+    except Exception as e:
+        logging.error(f"Unexpected exception in main loop: {e}", exc_info=True)
     finally:
+        logging.info("Entering finally block - shutting down")
+        # Gracefully shut down ambient audio
+        if ambient_manager:
+            ambient_manager.shutdown()
         # Gracefully shut down speech handler
         speech_handler.shutdown()
         pygame.quit()

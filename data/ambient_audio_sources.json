@@ -1,0 +1,58 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-01-01",
+  "description": "Ambient space audio sources for SpaceAtless",
+  "sources": {
+    "Sun": {
+      "url": "https://space.physics.uiowa.edu/plasma-wave/rbsp/audio/201904/VanA-2019-04-30-0054.mp3",
+      "type": "plasma_wave",
+      "description": "Solar wind plasma recordings from Van Allen Probes",
+      "credit": "University of Iowa Plasma Wave Research"
+    },
+    "Earth": {
+      "url": "https://space.physics.uiowa.edu/plasma-wave/rbsp/audio/201904/VanA-2019-04-30-0054.mp3",
+      "type": "plasma_wave",
+      "description": "Van Allen Probes recordings of Earth's radiation belts - chorus waves",
+      "credit": "University of Iowa Plasma Wave Research"
+    },
+    "Jupiter": {
+      "url": "https://space.physics.uiowa.edu/plasma-wave/juno/audio/201606/jno-bshock-16-176-0700-0900-blk.mp3",
+      "type": "plasma_wave",
+      "description": "Juno spacecraft recording of Jupiter's bow shock crossing",
+      "credit": "University of Iowa Plasma Wave Research"
+    },
+    "Europa": {
+      "url": "https://space.physics.uiowa.edu/plasma-wave/juno/audio/202209/jno-E45-LFRH-22-272-0836-1006-1st-try-Matlab-modified.mp3",
+      "type": "plasma_wave",
+      "description": "Juno Europa flyby plasma wave recordings - eerie whistles from Jupiter's moon",
+      "credit": "University of Iowa Plasma Wave Research"
+    },
+    "Ganymede": {
+      "url": "https://space.physics.uiowa.edu/plasma-wave/juno/audio/201606/jno-bshock-16-176-0700-0900-blk.mp3",
+      "type": "plasma_wave",
+      "description": "Juno Ganymede flyby plasma wave recordings",
+      "credit": "University of Iowa Plasma Wave Research"
+    },
+    "Io": {
+      "url": "https://space.physics.uiowa.edu/plasma-wave/juno/audio/201606/jno-bshock-16-176-0700-0900-blk.mp3",
+      "type": "plasma_wave",
+      "description": "Juno Io flyby plasma wave recordings",
+      "credit": "University of Iowa Plasma Wave Research"
+    },
+    "Callisto": {
+      "url": "https://space.physics.uiowa.edu/plasma-wave/juno/audio/201606/jno-bshock-16-176-0700-0900-blk.mp3",
+      "type": "plasma_wave",
+      "description": "Jupiter system plasma waves",
+      "credit": "University of Iowa Plasma Wave Research"
+    }
+  },
+  "fallback_rules": {
+    "Moon": "Use parent planet audio if available",
+    "Spacecraft": "Use parent planet audio or mission-specific audio"
+  },
+  "credits": {
+    "primary": "University of Iowa Radio and Plasma Wave Research Group",
+    "url": "https://space.physics.uiowa.edu/plasma-wave/",
+    "nasa": "NASA Juno and Van Allen Probes missions"
+  }
+}
